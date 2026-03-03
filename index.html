@@ -99,10 +99,20 @@
             <input id="toggleUnderserved" type="checkbox" checked />
             <span class="value">Score final</span>
           </label>
+          <div id="exportScoreFinal" class="small" style="display:none;margin-left:26px">
+            <a href="#" id="scoreFinalTableLink">Exibir tabela</a>
+            <span style="opacity:.5">•</span>
+            <a href="#" id="scoreFinalDownloadLink">Download</a>
+          </div>
           <label class="toggle">
             <input id="toggleStops" type="checkbox" />
             <span class="value">Transportes</span>
           </label>
+          <div id="exportStops" class="small" style="display:none;margin-left:26px">
+            <a href="#" id="stopsTableLink">Exibir tabela</a>
+            <span style="opacity:.5">•</span>
+            <a href="#" id="stopsDownloadLink">Download</a>
+          </div>
           <label class="toggle">
             <input id="toggleDensity" type="checkbox" />
             <span class="value">Densidade populacional</span>
@@ -226,6 +236,8 @@
       underservedMarkers: null,
       densityLayer: null,
       densityMarkers: null,
+      scoreFinalRows: null,
+      transportRows: null,
       wp3Stops: [],
       wp4StopsRegistryRows: [],
       wp4StopsRegistryIdx: null,
@@ -324,6 +336,87 @@
 
     function setStatus(text){
       document.getElementById('loadStatus').textContent = text;
+    }
+
+    function showExportsForActiveLayers(){
+      const scoreOn = !!document.getElementById('toggleUnderserved')?.checked;
+      const stopsOn = !!document.getElementById('toggleStops')?.checked;
+      const elScore = document.getElementById('exportScoreFinal');
+      const elStops = document.getElementById('exportStops');
+      if (elScore) elScore.style.display = scoreOn ? '' : 'none';
+      if (elStops) elStops.style.display = stopsOn ? '' : 'none';
+    }
+
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#39;');
+    }
+
+    function toCsv(rows, cols){
+      const q = (v)=>{
+        const s = (v === null || v === undefined) ? '' : String(v);
+        const ss = s.replaceAll('"','""');
+        return '"' + ss + '"';
+      };
+      const header = cols.map(c=>q(c.label)).join(',');
+      const lines = rows.map(r=> cols.map(c=> q(c.getter(r))).join(','));
+      return [header, ...lines].join('\n');
+    }
+
+    function downloadText(filename, text, mime='text/plain;charset=utf-8'){
+      const blob = new Blob([text], {type: mime});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=> URL.revokeObjectURL(url), 2000);
+    }
+
+    function openHtmlReport(title, bodyHtml){
+      const w = window.open('', '_blank');
+      if (!w) return;
+      w.document.open();
+      w.document.write(
+        '<!doctype html><html><head><meta charset="utf-8" />' +
+        '<meta name="viewport" content="width=device-width,initial-scale=1" />' +
+        '<title>' + escapeHtml(title) + '</title>' +
+        '<style>' +
+          'body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;margin:16px;color:#0f172a}' +
+          'h1{font-size:18px;margin:0 0 12px 0}' +
+          'h2{font-size:14px;margin:18px 0 8px 0}' +
+          'table{border-collapse:collapse;width:100%}' +
+          'th,td{border:1px solid #e2e8f0;padding:6px 8px;font-size:12px;vertical-align:top}' +
+          'th{background:#f1f5f9;text-align:left;position:sticky;top:0}' +
+          '.small{font-size:12px;color:#334155}' +
+          'code{background:#f1f5f9;padding:0 4px;border-radius:4px}' +
+        '</style>' +
+        '</head><body>' +
+        '<h1>' + escapeHtml(title) + '</h1>' +
+        bodyHtml +
+        '</body></html>'
+      );
+      w.document.close();
+    }
+
+    function deriveStopRecFlags(recText){
+      const t = (recText || '').toString().toLowerCase();
+      const has = (re)=> re.test(t);
+      return {
+        rec_iluminacao: has(/ilumina|lumin[aá]ria/),
+        rec_paineis_laterais: has(/pain[eé]is? laterais?|painel lateral|prote[cç][aã]o contra (vento|chuva)|prote[cç][aã]o contra as intemp[eé]ries/),
+        rec_rampa_rebaixo: has(/rampa|rebaixar o passeio|rebaixamento|rebaixo de lancil|rebaixamento e|rebaixamento do passeio|reparo do passeio|reparar o passeio/),
+        rec_pavimento_tatil: has(/pavimento t[aá]til/),
+        rec_banco_assento: has(/banco|assento|encosto/),
+        rec_limpeza_manutencao: has(/limpeza|manuten[cç][aã]o|grafitis?/),
+        rec_barreira_protecao: has(/barreira|gradeamento|barreiras de prote[cç][aã]o/)
+      };
     }
 
     function addError(text){
@@ -514,6 +607,8 @@
       syncLayer(state.underservedLayer, underservedOn);
       syncLayer(state.densityLayer, densityOn);
 
+      showExportsForActiveLayers();
+
       if (heatOn && typeof requestAnimationFrame === 'function') requestAnimationFrame(()=> setHeatVisible(true));
     }
 
@@ -592,12 +687,14 @@
         state.map.removeLayer(state.stopsLayer);
         clearStopSelection();
       }
+      showExportsForActiveLayers();
     });
     document.getElementById('toggleUnderserved').addEventListener('change', (e)=>{
       if (e.target.checked) state.underservedLayer.addTo(state.map); else state.map.removeLayer(state.underservedLayer);
       clearStopSelection();
       const lg = document.getElementById('underservedLegendGroup');
       if (lg) lg.style.display = e.target.checked ? '' : 'none';
+      showExportsForActiveLayers();
     });
 
     document.getElementById('toggleDensity').addEventListener('change', (e)=>{
@@ -909,6 +1006,8 @@
     function addStopsToMap(stops){
       state.stopsLayer.clearLayers();
 
+      state.transportRows = [];
+
       for (const s of stops){
         const lat = Number(s.latitude);
         const lon = Number(s.longitude);
@@ -928,8 +1027,34 @@
         marker.on('click', ()=> showStopDetails(s));
         const reg = nearestRegistryStop(lat, lon, 120);
         const niceName = reg && reg.row ? stopDisplayNameFromRegistry(reg.row) : null;
-        marker.bindTooltip(`${niceName || s.folder_name || 'Paragem'} • ${Number.isFinite(q) ? fmtNum(q,1)+"%" : "—"}`);
+
+        marker.bindTooltip(
+          `<div style="font-weight:600">${escapeHtml(niceName || s.folder_name || 'Paragem')}</div>`+
+          `<div class="small">Qualidade final: <b>${Number.isFinite(q) ? fmtNum(q,1)+"%" : "—"}</b></div>`+
+          `<div class="small">Clique para ver detalhes</div>`,
+          {sticky:true, direction:'top', opacity:0.95}
+        );
         marker.addTo(state.stopsLayer);
+
+        const issues = [];
+        for (const k of ['shelter_and_seating_issues','lighting_and_visibility_issues','cleanliness_and_maintenance_issues']){
+          const v = (s && s[k] !== null && s[k] !== undefined) ? String(s[k]).trim() : '';
+          if (v) issues.push(v);
+        }
+
+        state.transportRows.push({
+          name: niceName || s.folder_name || 'Paragem',
+          folder_name: s.folder_name || '',
+          type: s.type || '',
+          lat, lon,
+          final_quality_pct: Number.isFinite(q) ? q : null,
+          recommendation_pt: s.recommendation_pt || '',
+          missing: issues.join(' | ') || '',
+          accessibility_pct: Number.isFinite(Number(s.accessibility_for_people_with_disabilities_pct)) ? Number(s.accessibility_for_people_with_disabilities_pct) : null,
+          safety_pct: Number.isFinite(Number(s.pedestrian_safety_and_proximity_to_traffic_pct)) ? Number(s.pedestrian_safety_and_proximity_to_traffic_pct) : null,
+          comfort_pct: Number.isFinite(Number(s.weather_protection_and_overall_comfort_pct)) ? Number(s.weather_protection_and_overall_comfort_pct) : null,
+          ...deriveStopRecFlags(s.recommendation_pt)
+        });
       }
     }
 
@@ -1072,6 +1197,7 @@
     function addUnderservedFromDensity(densityCells, wp2Rows, wp1Rows, wp5StatsRow){
       state.underservedLayer.clearLayers();
       state.underservedMarkers = [];
+      state.scoreFinalRows = [];
 
       const maxPopPct = (wp5StatsRow && Number(wp5StatsRow.max_cell_pop_pct)) || null;
       const popMax = Number.isFinite(maxPopPct) ? maxPopPct : Math.max(...densityCells.map(r=>Number(r.pop_pct)).filter(Number.isFinite));
@@ -1173,6 +1299,15 @@
         m.bindTooltip(whyLines.join(''), {sticky:true, direction:'top', opacity:0.95});
         m.addTo(state.underservedLayer);
         state.underservedMarkers.push(m);
+
+        state.scoreFinalRows.push({
+          lat: e.lat,
+          lon: e.lon,
+          score_0_100: priority*100,
+          pop_pct: e.popPct*100,
+          accessibility_score: Number.isFinite(e.acc) ? e.acc : null,
+          amenities_sum: Number.isFinite(e.amenSum) ? e.amenSum : null
+        });
       }
 
       updateUnderservedParamsForZoom();
@@ -1211,6 +1346,120 @@
         addDensityFromWp5(densityCells || [], wp5Row);
         renderDensityKpis(wp5Row);
         addUnderservedFromDensity(densityCells || [], wp2 || [], wp1 || [], wp5Row);
+
+        const scoreTableLink = document.getElementById('scoreFinalTableLink');
+        const scoreDownloadLink = document.getElementById('scoreFinalDownloadLink');
+        const stopsTableLink = document.getElementById('stopsTableLink');
+        const stopsDownloadLink = document.getElementById('stopsDownloadLink');
+
+        if (scoreDownloadLink){
+          scoreDownloadLink.addEventListener('click', (ev)=>{
+            ev.preventDefault();
+            const rows = Array.isArray(state.scoreFinalRows) ? state.scoreFinalRows : [];
+            const cols = [
+              {label:'lat', getter:r=> Number.isFinite(r.lat) ? Number(r.lat).toFixed(6) : ''},
+              {label:'lon', getter:r=> Number.isFinite(r.lon) ? Number(r.lon).toFixed(6) : ''},
+              {label:'score (0–100)', getter:r=> Number.isFinite(r.score_0_100) ? r.score_0_100.toFixed(0) : ''},
+              {label:'pop (% total)', getter:r=> Number.isFinite(r.pop_pct) ? r.pop_pct.toFixed(3) : ''},
+              {label:'acessibilidade', getter:r=> Number.isFinite(r.accessibility_score) ? r.accessibility_score.toFixed(2) : ''},
+              {label:'Serviços', getter:r=> Number.isFinite(r.amenities_sum) ? String(Math.round(r.amenities_sum)) : ''}
+            ];
+            downloadText('score_final.csv', toCsv(rows, cols), 'text/csv;charset=utf-8');
+          });
+        }
+
+        if (scoreTableLink){
+          scoreTableLink.addEventListener('click', (ev)=>{
+            ev.preventDefault();
+            const rows = Array.isArray(state.scoreFinalRows) ? state.scoreFinalRows.slice() : [];
+            rows.sort((a,b)=>(b.score_0_100||0)-(a.score_0_100||0));
+
+            const topN = Math.max(1, Math.floor(rows.length*0.10));
+            const top = rows.slice(0, topN);
+            const bottom = rows.slice(-topN).reverse();
+            const coordList = (rs)=> rs.slice(0,30).map(r=>`(${Number(r.lat).toFixed(6)}, ${Number(r.lon).toFixed(6)})`).join(', ');
+
+            const body =
+              '<h2>Recomendações (por zona prioritária)</h2>'+
+              '<div class="small"><b>Top 10%</b> (maior score): priorizar intervenções nestas zonas/pontos.</div>'+
+              '<div class="small"><code>'+escapeHtml(coordList(top))+'</code></div>'+
+              '<div class="small" style="margin-top:10px"><b>Bottom 10%</b> (menor score): zonas com menor urgência relativa.</div>'+
+              '<div class="small"><code>'+escapeHtml(coordList(bottom))+'</code></div>'+
+              '<h2>Tabela completa</h2>'+
+              '<table><thead><tr><th>lat</th><th>lon</th><th>score (0–100)</th><th>pop (% total)</th><th>acessibilidade</th><th>Serviços</th></tr></thead><tbody>'+
+              rows.map(r=>
+                '<tr>'+
+                '<td>'+escapeHtml(Number(r.lat).toFixed(6))+'</td>'+
+                '<td>'+escapeHtml(Number(r.lon).toFixed(6))+'</td>'+
+                '<td>'+escapeHtml(Number.isFinite(r.score_0_100)?r.score_0_100.toFixed(0):'')+'</td>'+
+                '<td>'+escapeHtml(Number.isFinite(r.pop_pct)?r.pop_pct.toFixed(3):'')+'</td>'+
+                '<td>'+escapeHtml(Number.isFinite(r.accessibility_score)?r.accessibility_score.toFixed(2):'')+'</td>'+
+                '<td>'+escapeHtml(Number.isFinite(r.amenities_sum)?String(Math.round(r.amenities_sum)):'')+'</td>'+
+                '</tr>'
+              ).join('')+
+              '</tbody></table>';
+
+            openHtmlReport('Score final', body);
+          });
+        }
+
+        if (stopsDownloadLink){
+          stopsDownloadLink.addEventListener('click', (ev)=>{
+            ev.preventDefault();
+            const rows = Array.isArray(state.transportRows) ? state.transportRows : [];
+            const cols = [
+              {label:'Nome', getter:r=> r.name || ''},
+              {label:'lat', getter:r=> Number.isFinite(r.lat) ? Number(r.lat).toFixed(6) : ''},
+              {label:'lon', getter:r=> Number.isFinite(r.lon) ? Number(r.lon).toFixed(6) : ''},
+              {label:'Nota (%)', getter:r=> Number.isFinite(r.final_quality_pct) ? r.final_quality_pct.toFixed(1) : ''},
+              {label:'Iluminação', getter:r=> r.rec_iluminacao ? 'Sim' : ''},
+              {label:'Painéis laterais', getter:r=> r.rec_paineis_laterais ? 'Sim' : ''},
+              {label:'Rampa/Rebaixo', getter:r=> r.rec_rampa_rebaixo ? 'Sim' : ''},
+              {label:'Pavimento tátil', getter:r=> r.rec_pavimento_tatil ? 'Sim' : ''},
+              {label:'Banco/assento', getter:r=> r.rec_banco_assento ? 'Sim' : ''},
+              {label:'Limpeza/manutenção', getter:r=> r.rec_limpeza_manutencao ? 'Sim' : ''},
+              {label:'Barreira proteção', getter:r=> r.rec_barreira_protecao ? 'Sim' : ''},
+              {label:'Recomendação', getter:r=> r.recommendation_pt || ''},
+            ];
+            downloadText('transportes_paragens.csv', toCsv(rows, cols), 'text/csv;charset=utf-8');
+          });
+        }
+
+        if (stopsTableLink){
+          stopsTableLink.addEventListener('click', (ev)=>{
+            ev.preventDefault();
+            const rows = Array.isArray(state.transportRows) ? state.transportRows.slice() : [];
+            rows.sort((a,b)=>(b.final_quality_pct||0)-(a.final_quality_pct||0));
+            const body =
+              '<div class="small">Export baseado na camada <b>Transportes</b> (mesmas informações do painel da paragem).</div>'+
+              '<h2>Tabela completa</h2>'+
+              '<table><thead><tr>'+
+              '<th>Nome</th><th>lat</th><th>lon</th><th>Nota (%)</th>'+
+              '<th>Iluminação</th><th>Painéis laterais</th><th>Rampa/Rebaixo</th><th>Pavimento tátil</th><th>Banco/assento</th><th>Limpeza/manutenção</th><th>Barreira proteção</th>'+
+              '<th>Recomendação</th>'+
+              '</tr></thead><tbody>'+
+              rows.map(r=>
+                '<tr>'+
+                '<td>'+escapeHtml(r.name||'')+'</td>'+
+                '<td>'+escapeHtml(Number(r.lat).toFixed(6))+'</td>'+
+                '<td>'+escapeHtml(Number(r.lon).toFixed(6))+'</td>'+
+                '<td>'+escapeHtml(Number.isFinite(r.final_quality_pct)?r.final_quality_pct.toFixed(1):'')+'</td>'+
+                '<td>'+escapeHtml(r.rec_iluminacao ? 'Sim' : '')+'</td>'+
+                '<td>'+escapeHtml(r.rec_paineis_laterais ? 'Sim' : '')+'</td>'+
+                '<td>'+escapeHtml(r.rec_rampa_rebaixo ? 'Sim' : '')+'</td>'+
+                '<td>'+escapeHtml(r.rec_pavimento_tatil ? 'Sim' : '')+'</td>'+
+                '<td>'+escapeHtml(r.rec_banco_assento ? 'Sim' : '')+'</td>'+
+                '<td>'+escapeHtml(r.rec_limpeza_manutencao ? 'Sim' : '')+'</td>'+
+                '<td>'+escapeHtml(r.rec_barreira_protecao ? 'Sim' : '')+'</td>'+
+                '<td>'+escapeHtml(r.recommendation_pt||'')+'</td>'+
+                '</tr>'
+              ).join('')+
+              '</tbody></table>';
+            openHtmlReport('Transportes', body);
+          });
+        }
+
+        showExportsForActiveLayers();
 
         setStatus('');
       } catch (e) {
