@@ -1504,8 +1504,10 @@
               '(function(){'+
                 'function baseDir(){'+
                   'try{'+
-                    'const href=(window.opener && window.opener.location && window.opener.location.href) ? window.opener.location.href : window.location.href;'+
-                    'return href.split("#")[0].split("?")[0].replace(/\/[^\/]*$/, "/");'+
+                    'let href=(window.opener && window.opener.location && window.opener.location.href) ? window.opener.location.href : window.location.href;'+
+                    'href = href.split("#")[0].split("?")[0];'+
+                    'if(!href.endsWith("/") && !/\/[^\/]+\.[a-z0-9]+$/i.test(href)) href = href + "/";'+
+                    'return new URL(".", href).href;'+
                   '}catch(e){ return ""; }'+
                 '}'+
                 'function imgUrl(folder,file){'+
