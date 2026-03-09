@@ -382,11 +382,21 @@
     function openHtmlReport(title, bodyHtml){
       const w = window.open('', '_blank');
       if (!w) return;
+      const baseHref = (function(){
+        try{
+          const href = window.location.href.split('#')[0].split('?')[0];
+          if (href.endsWith('/')) return href;
+          return href.replace(/\/[^\/]*$/, '/') ;
+        }catch(e){
+          return '';
+        }
+      })();
       w.document.open();
       w.document.write(
         '<!doctype html><html><head><meta charset="utf-8" />' +
         '<meta name="viewport" content="width=device-width,initial-scale=1" />' +
         '<title>' + escapeHtml(title) + '</title>' +
+        (baseHref ? ('<base href="' + escapeHtml(baseHref) + '">') : '') +
         '<style>' +
           'body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;margin:16px;color:#0f172a}' +
           'h1{font-size:18px;margin:0 0 12px 0}' +
@@ -1484,7 +1494,7 @@
                 '<tr>'+
                 '<td class="stop-name" data-folder="'+escapeHtml(r.folder_name||'')+'" data-file="'+escapeHtml(r.selected_image_filename||'')+'">'+escapeHtml(r.name||'')+'</td>'+
                 (r.folder_name && r.selected_image_filename
-                  ? '<td><img class="stop-thumb" data-folder="'+escapeHtml(r.folder_name)+'" data-file="'+escapeHtml(r.selected_image_filename)+'" src="" alt="Foto" style="width:90px;height:60px;object-fit:cover;border-radius:8px;border:1px solid rgba(0,0,0,.15)"/></td>'
+                  ? '<td><img class="stop-thumb" data-folder="'+escapeHtml(r.folder_name)+'" data-file="'+escapeHtml(r.selected_image_filename)+'" src="stop_images/'+encodeURIComponent(r.folder_name)+'/'+encodeURIComponent(r.selected_image_filename)+'" alt="Foto" style="width:90px;height:60px;object-fit:cover;border-radius:8px;border:1px solid rgba(0,0,0,.15)"/></td>'
                   : '<td></td>')+
                 '<td>'+escapeHtml(Number(r.lat).toFixed(6))+'</td>'+
                 '<td>'+escapeHtml(Number(r.lon).toFixed(6))+'</td>'+
@@ -1502,18 +1512,9 @@
               '</tbody></table>'+
               '<scr'+'ipt>'+
               '(function(){'+
-                'function baseDir(){'+
-                  'try{'+
-                    'let href=(window.opener && window.opener.location && window.opener.location.href) ? window.opener.location.href : window.location.href;'+
-                    'href = href.split("#")[0].split("?")[0];'+
-                    'if(!href.endsWith("/") && !/\/[^\/]+\.[a-z0-9]+$/i.test(href)) href = href + "/";'+
-                    'return new URL(".", href).href;'+
-                  '}catch(e){ return ""; }'+
-                '}'+
                 'function imgUrl(folder,file){'+
-                  'const b=baseDir();'+
-                  'if(!b) return "";'+
-                  'return b+"stop_images/"+encodeURIComponent(folder)+"/"+encodeURIComponent(file);'+
+                  'if(!folder||!file) return "";'+
+                  return "stop_images/"+encodeURIComponent(folder)+"/"+encodeURIComponent(file);'+
                 '}'+
                 'const hover=document.createElement("div");'+
                 'hover.id="stopHover";'+
@@ -1551,7 +1552,8 @@
                   'hover.style.top = top + "px";'+
                 '});'+
                 'document.addEventListener("mouseover", (e)=>{'+
-                  'const td = e.target && e.target.closest ? e.target.closest("td.stop-name") : null;'+
+                  'const t = (e && e.target && e.target.nodeType===3) ? e.target.parentElement : (e ? e.target : null);'+
+                  'const td = t && t.closest ? t.closest("td.stop-name") : null;'+
                   'if(!td) return;'+
                   'const folder=(td.getAttribute("data-folder")||"").trim();'+
                   'const file=(td.getAttribute("data-file")||"").trim();'+
@@ -1560,16 +1562,11 @@
                   'showHover(url, e.clientX, e.clientY);'+
                 '});'+
                 'document.addEventListener("mouseout", (e)=>{'+
-                  'const td = e.target && e.target.closest ? e.target.closest("td.stop-name") : null;'+
+                  'const t = (e && e.target && e.target.nodeType===3) ? e.target.parentElement : (e ? e.target : null);'+
+                  'const td = t && t.closest ? t.closest("td.stop-name") : null;'+
                   'if(!td) return;'+
                   'hideHover();'+
                 '});'+
-                'for(const img of Array.from(document.querySelectorAll("img.stop-thumb"))){'+
-                  'const folder=img.getAttribute("data-folder")||"";'+
-                  'const file=img.getAttribute("data-file")||"";'+
-                  'const url=imgUrl(folder,file);'+
-                  'if(url) img.src = url;'+
-                '}'+
                 'const tb=document.querySelector("table tbody");'+
                 'if(!tb) return;'+
                 'const sel=Array.from(document.querySelectorAll("select[data-filter]"));'+
