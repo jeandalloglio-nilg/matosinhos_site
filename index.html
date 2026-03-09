@@ -1399,7 +1399,7 @@
               {label:'Restaurante', getter:r=> Number.isFinite(r.restaurant) ? String(Math.round(r.restaurant)) : ''},
               {label:'Parque', getter:r=> Number.isFinite(r.park) ? String(Math.round(r.park)) : ''}
             ];
-            downloadText('score_final.csv', toCsv(rows, cols), 'text/csv;charset=utf-8');
+            downloadText('analise_final.csv', toCsv(rows, cols), 'text/csv;charset=utf-8');
           });
         }
 
@@ -1456,9 +1456,9 @@
             const rows = Array.isArray(state.transportRows) ? state.transportRows : [];
             const cols = [
               {label:'Nome da paragem', getter:r=> r.name || ''},
-              {label:'lat', getter:r=> Number.isFinite(r.lat) ? Number(r.lat).toFixed(6) : ''},
-              {label:'lon', getter:r=> Number.isFinite(r.lon) ? Number(r.lon).toFixed(6) : ''},
-              {label:'Nota (%)', getter:r=> Number.isFinite(r.final_quality_pct) ? r.final_quality_pct.toFixed(1) : ''},
+              {label:'Latitude', getter:r=> Number.isFinite(r.lat) ? Number(r.lat).toFixed(6) : ''},
+              {label:'Longitude', getter:r=> Number.isFinite(r.lon) ? Number(r.lon).toFixed(6) : ''},
+              {label:'Nota da paragem(%)', getter:r=> Number.isFinite(r.final_quality_pct) ? r.final_quality_pct.toFixed(1) : ''},
               {label:'Necessita iluminação', getter:r=> r.rec_iluminacao ? 'Sim' : ''},
               {label:'Necessita painéis laterais', getter:r=> r.rec_paineis_laterais ? 'Sim' : ''},
               {label:'Necessita rampa/rebaixo', getter:r=> r.rec_rampa_rebaixo ? 'Sim' : ''},
@@ -1468,7 +1468,7 @@
               {label:'Necessita barreira de proteção', getter:r=> r.rec_barreira_protecao ? 'Sim' : ''},
               {label:'Recomendação', getter:r=> r.recommendation_pt || ''},
             ];
-            downloadText('transportes_paragens.csv', toCsv(rows, cols), 'text/csv;charset=utf-8');
+            downloadText('analise_paragens.csv', toCsv(rows, cols), 'text/csv;charset=utf-8');
           });
         }
 
