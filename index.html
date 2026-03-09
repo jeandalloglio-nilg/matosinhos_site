@@ -1480,7 +1480,7 @@
 
             const body =
               '<table><thead><tr>'+
-              '<th>Nome da paragem</th><th>Foto</th><th>lat</th><th>lon</th><th>Nota (%)</th>'+
+              '<th>Nome da paragem</th><th>Imagem da paragem</th><th>Latitude</th><th>Longitude</th><th>Nota da paragem(%)</th>'+
               '<th>Necessita iluminação<br/><select data-filter="iluminacao" style="margin-top:4px;max-width:120px"><option value="all" selected>Todos</option><option value="sim">Sim</option></select></th>'+
               '<th>Necessita painéis laterais<br/><select data-filter="paineis" style="margin-top:4px;max-width:120px"><option value="all" selected>Todos</option><option value="sim">Sim</option></select></th>'+
               '<th>Necessita rampa/rebaixo<br/><select data-filter="rampa" style="margin-top:4px;max-width:120px"><option value="all" selected>Todos</option><option value="sim">Sim</option></select></th>'+
@@ -1514,12 +1514,12 @@
               '(function(){'+
                 'function imgUrl(folder,file){'+
                   'if(!folder||!file) return "";'+
-                  return "stop_images/"+encodeURIComponent(folder)+"/"+encodeURIComponent(file);'+
+                  'return "stop_images/"+encodeURIComponent(folder)+"/"+encodeURIComponent(file);'+
                 '}'+
                 'const hover=document.createElement("div");'+
                 'hover.id="stopHover";'+
                 'hover.style.cssText="display:none;position:fixed;left:0;top:0;z-index:9999;padding:8px;background:rgba(15,17,24,.96);border:1px solid rgba(255,255,255,.14);border-radius:12px;box-shadow:0 16px 48px rgba(0,0,0,.45);";'+
-                'hover.innerHTML = "<img id=\\\"stopHoverImg\\\" src=\\\"\\\" alt=\\\"Foto da paragem\\\" style=\\\"display:block;width:260px;height:180px;object-fit:cover;border-radius:10px;\\\"/>";'+
+                'hover.innerHTML = "<img id=\\\"stopHoverImg\\\" src=\\\"\\\" alt=\\\"Foto da paragem\\\" style=\\\"display:block;width:520px;height:370px;object-fit:cover;border-radius:10px;\\\"/>";'+
                 'document.body.appendChild(hover);'+
                 'const hoverImg = document.getElementById("stopHoverImg");'+
                 'let hoverActive = false;'+
@@ -1529,7 +1529,7 @@
                   'hoverActive=true;'+
                   'if(hoverImg) hoverImg.src=url;'+
                   'const margin=14;'+
-                  'const w=280; const h=200;'+
+                  'const w=560; const h=410;'+
                   'let left = x + margin; let top = y + margin;'+
                   'if(left + w > window.innerWidth) left = x - w - margin;'+
                   'if(top + h > window.innerHeight) top = y - h - margin;'+
@@ -1542,7 +1542,7 @@
                 'document.addEventListener("mousemove", (e)=>{'+
                   'if(!hoverActive) return;'+
                   'const x=e.clientX, y=e.clientY;'+
-                  'const margin=14; const w=280; const h=200;'+
+                  'const margin=14; const w=560; const h=410;'+
                   'let left = x + margin; let top = y + margin;'+
                   'if(left + w > window.innerWidth) left = x - w - margin;'+
                   'if(top + h > window.innerHeight) top = y - h - margin;'+
@@ -1554,9 +1554,11 @@
                 'document.addEventListener("mouseover", (e)=>{'+
                   'const t = (e && e.target && e.target.nodeType===3) ? e.target.parentElement : (e ? e.target : null);'+
                   'const td = t && t.closest ? t.closest("td.stop-name") : null;'+
-                  'if(!td) return;'+
-                  'const folder=(td.getAttribute("data-folder")||"").trim();'+
-                  'const file=(td.getAttribute("data-file")||"").trim();'+
+                  'const img = t && t.closest ? t.closest("img.stop-thumb") : null;'+
+                  'const el = td || img;'+
+                  'if(!el) return;'+
+                  'const folder=(el.getAttribute("data-folder")||"").trim();'+
+                  'const file=(el.getAttribute("data-file")||"").trim();'+
                   'if(!folder || !file) return;'+
                   'const url=imgUrl(folder,file);'+
                   'showHover(url, e.clientX, e.clientY);'+
@@ -1564,7 +1566,8 @@
                 'document.addEventListener("mouseout", (e)=>{'+
                   'const t = (e && e.target && e.target.nodeType===3) ? e.target.parentElement : (e ? e.target : null);'+
                   'const td = t && t.closest ? t.closest("td.stop-name") : null;'+
-                  'if(!td) return;'+
+                  'const img = t && t.closest ? t.closest("img.stop-thumb") : null;'+
+                  'if(!td && !img) return;'+
                   'hideHover();'+
                 '});'+
                 'const tb=document.querySelector("table tbody");'+
