@@ -97,7 +97,7 @@
         <div style="display:flex;flex-direction:column;gap:10px">
           <label class="toggle">
             <input id="toggleUnderserved" type="checkbox" checked />
-            <span class="value">Score final</span>
+            <span class="value">Análise final</span>
           </label>
           <div id="exportScoreFinal" class="small" style="display:none;margin-left:26px">
             <a href="#" id="scoreFinalTableLink">Exibir tabela</a>
@@ -138,15 +138,15 @@
             <div class="svc-subtoggles" id="serviceMapSubtoggles">
               <div class="small">Filtrar tipos</div>
               <div class="row">
-                <label class="toggle"><input id="svcSchool" type="checkbox" /><span class="value">School</span></label>
+                <label class="toggle"><input id="svcSchool" type="checkbox" /><span class="value">Escola</span></label>
                 <label class="toggle"><input id="svcHospital" type="checkbox" /><span class="value">Hospital</span></label>
-                <label class="toggle"><input id="svcClinic" type="checkbox" /><span class="value">Clinic</span></label>
-                <label class="toggle"><input id="svcPharmacy" type="checkbox" /><span class="value">Pharmacy</span></label>
-                <label class="toggle"><input id="svcSupermarket" type="checkbox" /><span class="value">Supermarket</span></label>
-                <label class="toggle"><input id="svcBakery" type="checkbox" /><span class="value">Bakery</span></label>
-                <label class="toggle"><input id="svcCafe" type="checkbox" /><span class="value">Cafe</span></label>
-                <label class="toggle"><input id="svcRestaurant" type="checkbox" /><span class="value">Restaurant</span></label>
-                <label class="toggle"><input id="svcPark" type="checkbox" /><span class="value">Park</span></label>
+                <label class="toggle"><input id="svcClinic" type="checkbox" /><span class="value">Clínica</span></label>
+                <label class="toggle"><input id="svcPharmacy" type="checkbox" /><span class="value">Farmácia</span></label>
+                <label class="toggle"><input id="svcSupermarket" type="checkbox" /><span class="value">Supermercado</span></label>
+                <label class="toggle"><input id="svcBakery" type="checkbox" /><span class="value">Padaria</span></label>
+                <label class="toggle"><input id="svcCafe" type="checkbox" /><span class="value">Café</span></label>
+                <label class="toggle"><input id="svcRestaurant" type="checkbox" /><span class="value">Restaurante</span></label>
+                <label class="toggle"><input id="svcPark" type="checkbox" /><span class="value">Parque</span></label>
               </div>
             </div>
           </div>
@@ -753,15 +753,15 @@
       if (!root) return;
       root.innerHTML = '';
       const items = [
-        {k:'school', label:'School', c:'#2563eb'},
+        {k:'school', label:'Escola', c:'#2563eb'},
         {k:'hospital', label:'Hospital', c:'#dc2626'},
-        {k:'clinic', label:'Clinic', c:'#f97316'},
-        {k:'pharmacy', label:'Pharmacy', c:'#10b981'},
-        {k:'supermarket', label:'Supermarket', c:'#a855f7'},
-        {k:'bakery', label:'Bakery', c:'#f59e0b'},
-        {k:'cafe', label:'Cafe', c:'#a16207'},
-        {k:'restaurant', label:'Restaurant', c:'#ec4899'},
-        {k:'park', label:'Park', c:'#22c55e'}
+        {k:'clinic', label:'Clínica', c:'#f97316'},
+        {k:'pharmacy', label:'Farmácia', c:'#10b981'},
+        {k:'supermarket', label:'Supermercado', c:'#a855f7'},
+        {k:'bakery', label:'Padaria', c:'#f59e0b'},
+        {k:'cafe', label:'Café', c:'#a16207'},
+        {k:'restaurant', label:'Restaurante', c:'#ec4899'},
+        {k:'park', label:'Parque', c:'#22c55e'}
       ];
       for (const it of items){
         const row = document.createElement('div');
@@ -782,15 +782,15 @@
       if (!state.servicePoiLayers) return;
 
       const types = [
-        {k:'school', label:'School', c:'#2563eb'},
+        {k:'school', label:'Escola', c:'#2563eb'},
         {k:'hospital', label:'Hospital', c:'#dc2626'},
-        {k:'clinic', label:'Clinic', c:'#f97316'},
-        {k:'pharmacy', label:'Pharmacy', c:'#10b981'},
-        {k:'supermarket', label:'Supermarket', c:'#a855f7'},
-        {k:'bakery', label:'Bakery', c:'#f59e0b'},
-        {k:'cafe', label:'Cafe', c:'#a16207'},
-        {k:'restaurant', label:'Restaurant', c:'#ec4899'},
-        {k:'park', label:'Park', c:'#22c55e'}
+        {k:'clinic', label:'Clínica', c:'#f97316'},
+        {k:'pharmacy', label:'Farmácia', c:'#10b981'},
+        {k:'supermarket', label:'Supermercado', c:'#a855f7'},
+        {k:'bakery', label:'Padaria', c:'#f59e0b'},
+        {k:'cafe', label:'Café', c:'#a16207'},
+        {k:'restaurant', label:'Restaurante', c:'#ec4899'},
+        {k:'park', label:'Parque', c:'#22c55e'}
       ];
 
       for (const t of types){
@@ -1045,6 +1045,7 @@
         state.transportRows.push({
           name: niceName || s.folder_name || 'Paragem',
           folder_name: s.folder_name || '',
+          selected_image_filename: s.selected_image_filename || '',
           type: s.type || '',
           lat, lon,
           final_quality_pct: Number.isFinite(q) ? q : null,
@@ -1077,16 +1078,16 @@
 
       const keys = ['school','hospital','clinic','pharmacy','supermarket','bakery','cafe','restaurant','park','transport'];
       const keyLabels = {
-        school: 'School',
+        school: 'Escola',
         hospital: 'Hospital',
-        clinic: 'Clinic',
-        pharmacy: 'Pharmacy',
-        supermarket: 'Supermarket',
-        bakery: 'Bakery',
-        cafe: 'Cafe',
-        restaurant: 'Restaurant',
-        park: 'Park',
-        transport: 'Transport'
+        clinic: 'Clínica',
+        pharmacy: 'Farmácia',
+        supermarket: 'Supermercado',
+        bakery: 'Padaria',
+        cafe: 'Café',
+        restaurant: 'Restaurante',
+        park: 'Parque',
+        transport: 'Transportes'
       };
       for (const r of rows){
         const lat = Number(r.lat);
@@ -1207,7 +1208,7 @@
       const accMax = accVals.length ? Math.max(...accVals) : 1;
 
       const amenVals = wp1Rows.map(r=>{
-        const keys = ['school','hospital','clinic','pharmacy','supermarket','bakery','cafe','restaurant','park','transport'];
+        const keys = ['school','hospital','clinic','pharmacy','supermarket','bakery','cafe','restaurant','park'];
         return keys.reduce((a,k)=>a+(Number(r[k])||0),0);
       }).filter(Number.isFinite);
       const amenMin = amenVals.length ? Math.min(...amenVals) : 0;
@@ -1236,6 +1237,8 @@
       const step = 2;
       const eps = 1e-6;
 
+      const serviceKeys = ['school','hospital','clinic','pharmacy','supermarket','bakery','cafe','restaurant','park'];
+
       // 1) calcular score bruto para todos os pontos amostrados
       const entries = [];
       for (let i=0; i<densityCells.length; i+=step){
@@ -1253,16 +1256,19 @@
 
         const nearAmen = _nearestFromIndex(lat, lon, wp1Idx, 'lat', 'lon', bucketDeg, 250);
         let amenSum = null;
+        const serviceCounts = {};
         if (nearAmen.row){
-          const keys = ['school','hospital','clinic','pharmacy','supermarket','bakery','cafe','restaurant','park','transport'];
-          amenSum = keys.reduce((a,k)=>a+(Number(nearAmen.row[k])||0),0);
+          for (const k of serviceKeys){
+            serviceCounts[k] = Number(nearAmen.row[k]) || 0;
+          }
+          amenSum = serviceKeys.reduce((a,k)=>a+(serviceCounts[k]||0),0);
         }
         const nAmen = Number.isFinite(amenSum) ? norm(amenSum, amenMin, amenMax) : 0;
 
         const denom = (0.7*nAcc + 0.3*nAmen);
         const raw = (nPop + eps) / (denom + eps);
 
-        entries.push({lat, lon, popPct, acc, amenSum, raw});
+        entries.push({lat, lon, popPct, acc, amenSum, serviceCounts, raw});
       }
 
       const rawSorted = entries.map(e=>e.raw).filter(Number.isFinite).sort((a,b)=>a-b);
@@ -1277,7 +1283,8 @@
       // 2) renderizar com score normalizado por percentil
       for (const e of entries){
         const priority = percentile01(e.raw);
-        const fill = color10(priority);
+        const score = 1 - priority;
+        const fill = color10(score);
 
         const m = L.circleMarker([e.lat, e.lon], {
           pane: 'underservedPane',
@@ -1289,11 +1296,11 @@
         });
 
         const whyLines = [
-          `<div style="font-weight:600;margin-bottom:2px">Score final</div>`,
-          `<div class="small" style="margin-bottom:6px">Nota: <b>${fmtNum(priority*100,0)}/100</b></div>`,
+          `<div style="font-weight:600;margin-bottom:2px">Análise final</div>`,
+          `<div class="small" style="margin-bottom:6px">Nota: <b>${fmtNum(score*100,0)}/100</b></div>`,
           `<div class="small"><b>População</b>: ${fmtNum(e.popPct*100,2)}% do total</div>`,
           `<div class="small"><b>Acessibilidade</b>: ${Number.isFinite(e.acc) ? fmtNum(e.acc,2) : '—'}</div>`,
-          `<div class="small"><b>Amenities</b>: ${Number.isFinite(e.amenSum) ? fmtNum(e.amenSum,0) : '—'}</div>`
+          `<div class="small"><b>Serviços</b>: ${Number.isFinite(e.amenSum) ? fmtNum(e.amenSum,0) : '—'}</div>`
         ];
 
         m.bindTooltip(whyLines.join(''), {sticky:true, direction:'top', opacity:0.95});
@@ -1303,10 +1310,19 @@
         state.scoreFinalRows.push({
           lat: e.lat,
           lon: e.lon,
-          score_0_100: priority*100,
+          score_0_100: score*100,
           pop_pct: e.popPct*100,
           accessibility_score: Number.isFinite(e.acc) ? e.acc : null,
-          amenities_sum: Number.isFinite(e.amenSum) ? e.amenSum : null
+          amenities_sum: Number.isFinite(e.amenSum) ? e.amenSum : null,
+          school: (e.serviceCounts && Number.isFinite(Number(e.serviceCounts.school))) ? Number(e.serviceCounts.school) : 0,
+          hospital: (e.serviceCounts && Number.isFinite(Number(e.serviceCounts.hospital))) ? Number(e.serviceCounts.hospital) : 0,
+          clinic: (e.serviceCounts && Number.isFinite(Number(e.serviceCounts.clinic))) ? Number(e.serviceCounts.clinic) : 0,
+          pharmacy: (e.serviceCounts && Number.isFinite(Number(e.serviceCounts.pharmacy))) ? Number(e.serviceCounts.pharmacy) : 0,
+          supermarket: (e.serviceCounts && Number.isFinite(Number(e.serviceCounts.supermarket))) ? Number(e.serviceCounts.supermarket) : 0,
+          bakery: (e.serviceCounts && Number.isFinite(Number(e.serviceCounts.bakery))) ? Number(e.serviceCounts.bakery) : 0,
+          cafe: (e.serviceCounts && Number.isFinite(Number(e.serviceCounts.cafe))) ? Number(e.serviceCounts.cafe) : 0,
+          restaurant: (e.serviceCounts && Number.isFinite(Number(e.serviceCounts.restaurant))) ? Number(e.serviceCounts.restaurant) : 0,
+          park: (e.serviceCounts && Number.isFinite(Number(e.serviceCounts.park))) ? Number(e.serviceCounts.park) : 0
         });
       }
 
@@ -1357,12 +1373,21 @@
             ev.preventDefault();
             const rows = Array.isArray(state.scoreFinalRows) ? state.scoreFinalRows : [];
             const cols = [
-              {label:'lat', getter:r=> Number.isFinite(r.lat) ? Number(r.lat).toFixed(6) : ''},
-              {label:'lon', getter:r=> Number.isFinite(r.lon) ? Number(r.lon).toFixed(6) : ''},
-              {label:'score (0–100)', getter:r=> Number.isFinite(r.score_0_100) ? r.score_0_100.toFixed(0) : ''},
-              {label:'pop (% total)', getter:r=> Number.isFinite(r.pop_pct) ? r.pop_pct.toFixed(3) : ''},
-              {label:'acessibilidade', getter:r=> Number.isFinite(r.accessibility_score) ? r.accessibility_score.toFixed(2) : ''},
-              {label:'Serviços', getter:r=> Number.isFinite(r.amenities_sum) ? String(Math.round(r.amenities_sum)) : ''}
+              {label:'Latitude', getter:r=> Number.isFinite(r.lat) ? Number(r.lat).toFixed(6) : ''},
+              {label:'Longitude', getter:r=> Number.isFinite(r.lon) ? Number(r.lon).toFixed(6) : ''},
+              {label:'Nota final da localização (0–100)', getter:r=> Number.isFinite(r.score_0_100) ? r.score_0_100.toFixed(0) : ''},
+              {label:'População (% do total)', getter:r=> Number.isFinite(r.pop_pct) ? r.pop_pct.toFixed(6) : ''},
+              {label:'Nota de acessibilidade', getter:r=> Number.isFinite(r.accessibility_score) ? r.accessibility_score.toFixed(2) : ''},
+              {label:'Serviços (total)', getter:r=> Number.isFinite(r.amenities_sum) ? String(Math.round(r.amenities_sum)) : ''},
+              {label:'Escola', getter:r=> Number.isFinite(r.school) ? String(Math.round(r.school)) : ''},
+              {label:'Hospital', getter:r=> Number.isFinite(r.hospital) ? String(Math.round(r.hospital)) : ''},
+              {label:'Clínica', getter:r=> Number.isFinite(r.clinic) ? String(Math.round(r.clinic)) : ''},
+              {label:'Farmácia', getter:r=> Number.isFinite(r.pharmacy) ? String(Math.round(r.pharmacy)) : ''},
+              {label:'Supermercado', getter:r=> Number.isFinite(r.supermarket) ? String(Math.round(r.supermarket)) : ''},
+              {label:'Padaria', getter:r=> Number.isFinite(r.bakery) ? String(Math.round(r.bakery)) : ''},
+              {label:'Café', getter:r=> Number.isFinite(r.cafe) ? String(Math.round(r.cafe)) : ''},
+              {label:'Restaurante', getter:r=> Number.isFinite(r.restaurant) ? String(Math.round(r.restaurant)) : ''},
+              {label:'Parque', getter:r=> Number.isFinite(r.park) ? String(Math.round(r.park)) : ''}
             ];
             downloadText('score_final.csv', toCsv(rows, cols), 'text/csv;charset=utf-8');
           });
@@ -1372,34 +1397,46 @@
           scoreTableLink.addEventListener('click', (ev)=>{
             ev.preventDefault();
             const rows = Array.isArray(state.scoreFinalRows) ? state.scoreFinalRows.slice() : [];
-            rows.sort((a,b)=>(b.score_0_100||0)-(a.score_0_100||0));
+            rows.sort((a,b)=>(a.score_0_100||0)-(b.score_0_100||0));
 
-            const topN = Math.max(1, Math.floor(rows.length*0.10));
-            const top = rows.slice(0, topN);
-            const bottom = rows.slice(-topN).reverse();
-            const coordList = (rs)=> rs.slice(0,30).map(r=>`(${Number(r.lat).toFixed(6)}, ${Number(r.lon).toFixed(6)})`).join(', ');
+            const legend =
+              '<h2>Legenda das colunas</h2>'+
+              '<div class="small"><b>Latitude</b>: latitude do ponto.</div>'+
+              '<div class="small"><b>Longitude</b>: longitude do ponto.</div>'+
+              '<div class="small"><b>Nota final da localização (0–100)</b>: indicador relativo (percentil) que combina população, acessibilidade e serviços. Quanto maior a nota, melhor a cobertura de acessibilidade/serviços para a população naquele ponto (aparece mais verde no mapa).</div>'+
+              '<div class="small"><b>População (% do total)</b>: percentagem da população total associada à célula/ponto.</div>'+
+              '<div class="small"><b>Nota de acessibilidade</b>: medida de acessibilidade no local, calculada a partir da grelha de acessibilidade (um valor numérico por célula). Para cada ponto da Análise final, usamos a célula da grelha mais próxima para atribuir esta nota.</div>'+
+              '<div class="small"><b>Serviços (total)</b>: quantidade total de serviços.</div>';
 
             const body =
-              '<h2>Recomendações (por zona prioritária)</h2>'+
-              '<div class="small"><b>Top 10%</b> (maior score): priorizar intervenções nestas zonas/pontos.</div>'+
-              '<div class="small"><code>'+escapeHtml(coordList(top))+'</code></div>'+
-              '<div class="small" style="margin-top:10px"><b>Bottom 10%</b> (menor score): zonas com menor urgência relativa.</div>'+
-              '<div class="small"><code>'+escapeHtml(coordList(bottom))+'</code></div>'+
-              '<h2>Tabela completa</h2>'+
-              '<table><thead><tr><th>lat</th><th>lon</th><th>score (0–100)</th><th>pop (% total)</th><th>acessibilidade</th><th>Serviços</th></tr></thead><tbody>'+
+              legend+
+              '<div style="height:10px"></div>'+
+              '<table><thead><tr>'+
+              '<th>Latitude</th><th>Longitude</th><th>Nota final da localização (0–100)</th><th>População (% do total)</th><th>Nota de acessibilidade</th><th>Serviços (total)</th>'+
+              '<th>Escola</th><th>Hospital</th><th>Clínica</th><th>Farmácia</th><th>Supermercado</th><th>Padaria</th><th>Café</th><th>Restaurante</th><th>Parque</th>'+
+              '</tr></thead><tbody>'+
               rows.map(r=>
                 '<tr>'+
                 '<td>'+escapeHtml(Number(r.lat).toFixed(6))+'</td>'+
                 '<td>'+escapeHtml(Number(r.lon).toFixed(6))+'</td>'+
                 '<td>'+escapeHtml(Number.isFinite(r.score_0_100)?r.score_0_100.toFixed(0):'')+'</td>'+
-                '<td>'+escapeHtml(Number.isFinite(r.pop_pct)?r.pop_pct.toFixed(3):'')+'</td>'+
+                '<td>'+escapeHtml(Number.isFinite(r.pop_pct)?r.pop_pct.toFixed(6):'')+'</td>'+
                 '<td>'+escapeHtml(Number.isFinite(r.accessibility_score)?r.accessibility_score.toFixed(2):'')+'</td>'+
                 '<td>'+escapeHtml(Number.isFinite(r.amenities_sum)?String(Math.round(r.amenities_sum)):'')+'</td>'+
+                '<td>'+escapeHtml(Number.isFinite(r.school)?String(Math.round(r.school)):'')+'</td>'+
+                '<td>'+escapeHtml(Number.isFinite(r.hospital)?String(Math.round(r.hospital)):'')+'</td>'+
+                '<td>'+escapeHtml(Number.isFinite(r.clinic)?String(Math.round(r.clinic)):'')+'</td>'+
+                '<td>'+escapeHtml(Number.isFinite(r.pharmacy)?String(Math.round(r.pharmacy)):'')+'</td>'+
+                '<td>'+escapeHtml(Number.isFinite(r.supermarket)?String(Math.round(r.supermarket)):'')+'</td>'+
+                '<td>'+escapeHtml(Number.isFinite(r.bakery)?String(Math.round(r.bakery)):'')+'</td>'+
+                '<td>'+escapeHtml(Number.isFinite(r.cafe)?String(Math.round(r.cafe)):'')+'</td>'+
+                '<td>'+escapeHtml(Number.isFinite(r.restaurant)?String(Math.round(r.restaurant)):'')+'</td>'+
+                '<td>'+escapeHtml(Number.isFinite(r.park)?String(Math.round(r.park)):'')+'</td>'+
                 '</tr>'
               ).join('')+
               '</tbody></table>';
 
-            openHtmlReport('Score final', body);
+            openHtmlReport('Análise final', body);
           });
         }
 
@@ -1408,17 +1445,17 @@
             ev.preventDefault();
             const rows = Array.isArray(state.transportRows) ? state.transportRows : [];
             const cols = [
-              {label:'Nome', getter:r=> r.name || ''},
+              {label:'Nome da paragem', getter:r=> r.name || ''},
               {label:'lat', getter:r=> Number.isFinite(r.lat) ? Number(r.lat).toFixed(6) : ''},
               {label:'lon', getter:r=> Number.isFinite(r.lon) ? Number(r.lon).toFixed(6) : ''},
               {label:'Nota (%)', getter:r=> Number.isFinite(r.final_quality_pct) ? r.final_quality_pct.toFixed(1) : ''},
-              {label:'Iluminação', getter:r=> r.rec_iluminacao ? 'Sim' : ''},
-              {label:'Painéis laterais', getter:r=> r.rec_paineis_laterais ? 'Sim' : ''},
-              {label:'Rampa/Rebaixo', getter:r=> r.rec_rampa_rebaixo ? 'Sim' : ''},
-              {label:'Pavimento tátil', getter:r=> r.rec_pavimento_tatil ? 'Sim' : ''},
-              {label:'Banco/assento', getter:r=> r.rec_banco_assento ? 'Sim' : ''},
-              {label:'Limpeza/manutenção', getter:r=> r.rec_limpeza_manutencao ? 'Sim' : ''},
-              {label:'Barreira proteção', getter:r=> r.rec_barreira_protecao ? 'Sim' : ''},
+              {label:'Necessita iluminação', getter:r=> r.rec_iluminacao ? 'Sim' : ''},
+              {label:'Necessita painéis laterais', getter:r=> r.rec_paineis_laterais ? 'Sim' : ''},
+              {label:'Necessita rampa/rebaixo', getter:r=> r.rec_rampa_rebaixo ? 'Sim' : ''},
+              {label:'Necessita pavimento tátil', getter:r=> r.rec_pavimento_tatil ? 'Sim' : ''},
+              {label:'Necessita banco/assento', getter:r=> r.rec_banco_assento ? 'Sim' : ''},
+              {label:'Necessita limpeza/manutenção', getter:r=> r.rec_limpeza_manutencao ? 'Sim' : ''},
+              {label:'Necessita barreira de proteção', getter:r=> r.rec_barreira_protecao ? 'Sim' : ''},
               {label:'Recomendação', getter:r=> r.recommendation_pt || ''},
             ];
             downloadText('transportes_paragens.csv', toCsv(rows, cols), 'text/csv;charset=utf-8');
@@ -1430,31 +1467,131 @@
             ev.preventDefault();
             const rows = Array.isArray(state.transportRows) ? state.transportRows.slice() : [];
             rows.sort((a,b)=>(b.final_quality_pct||0)-(a.final_quality_pct||0));
+
             const body =
-              '<div class="small">Export baseado na camada <b>Transportes</b> (mesmas informações do painel da paragem).</div>'+
-              '<h2>Tabela completa</h2>'+
               '<table><thead><tr>'+
-              '<th>Nome</th><th>lat</th><th>lon</th><th>Nota (%)</th>'+
-              '<th>Iluminação</th><th>Painéis laterais</th><th>Rampa/Rebaixo</th><th>Pavimento tátil</th><th>Banco/assento</th><th>Limpeza/manutenção</th><th>Barreira proteção</th>'+
+              '<th>Nome da paragem</th><th>Foto</th><th>lat</th><th>lon</th><th>Nota (%)</th>'+
+              '<th>Necessita iluminação<br/><select data-filter="iluminacao" style="margin-top:4px;max-width:120px"><option value="all" selected>Todos</option><option value="sim">Sim</option></select></th>'+
+              '<th>Necessita painéis laterais<br/><select data-filter="paineis" style="margin-top:4px;max-width:120px"><option value="all" selected>Todos</option><option value="sim">Sim</option></select></th>'+
+              '<th>Necessita rampa/rebaixo<br/><select data-filter="rampa" style="margin-top:4px;max-width:120px"><option value="all" selected>Todos</option><option value="sim">Sim</option></select></th>'+
+              '<th>Necessita pavimento tátil<br/><select data-filter="tatil" style="margin-top:4px;max-width:120px"><option value="all" selected>Todos</option><option value="sim">Sim</option></select></th>'+
+              '<th>Necessita banco/assento<br/><select data-filter="banco" style="margin-top:4px;max-width:120px"><option value="all" selected>Todos</option><option value="sim">Sim</option></select></th>'+
+              '<th>Necessita limpeza/manutenção<br/><select data-filter="limpeza" style="margin-top:4px;max-width:120px"><option value="all" selected>Todos</option><option value="sim">Sim</option></select></th>'+
+              '<th>Necessita barreira de proteção<br/><select data-filter="barreira" style="margin-top:4px;max-width:120px"><option value="all" selected>Todos</option><option value="sim">Sim</option></select></th>'+
               '<th>Recomendação</th>'+
               '</tr></thead><tbody>'+
               rows.map(r=>
                 '<tr>'+
-                '<td>'+escapeHtml(r.name||'')+'</td>'+
+                '<td class="stop-name" data-folder="'+escapeHtml(r.folder_name||'')+'" data-file="'+escapeHtml(r.selected_image_filename||'')+'">'+escapeHtml(r.name||'')+'</td>'+
+                (r.folder_name && r.selected_image_filename
+                  ? '<td><img class="stop-thumb" data-folder="'+escapeHtml(r.folder_name)+'" data-file="'+escapeHtml(r.selected_image_filename)+'" src="" alt="Foto" style="width:90px;height:60px;object-fit:cover;border-radius:8px;border:1px solid rgba(0,0,0,.15)"/></td>'
+                  : '<td></td>')+
                 '<td>'+escapeHtml(Number(r.lat).toFixed(6))+'</td>'+
                 '<td>'+escapeHtml(Number(r.lon).toFixed(6))+'</td>'+
                 '<td>'+escapeHtml(Number.isFinite(r.final_quality_pct)?r.final_quality_pct.toFixed(1):'')+'</td>'+
-                '<td>'+escapeHtml(r.rec_iluminacao ? 'Sim' : '')+'</td>'+
-                '<td>'+escapeHtml(r.rec_paineis_laterais ? 'Sim' : '')+'</td>'+
-                '<td>'+escapeHtml(r.rec_rampa_rebaixo ? 'Sim' : '')+'</td>'+
-                '<td>'+escapeHtml(r.rec_pavimento_tatil ? 'Sim' : '')+'</td>'+
-                '<td>'+escapeHtml(r.rec_banco_assento ? 'Sim' : '')+'</td>'+
-                '<td>'+escapeHtml(r.rec_limpeza_manutencao ? 'Sim' : '')+'</td>'+
-                '<td>'+escapeHtml(r.rec_barreira_protecao ? 'Sim' : '')+'</td>'+
+                '<td data-k="iluminacao">'+escapeHtml(r.rec_iluminacao ? 'Sim' : '')+'</td>'+
+                '<td data-k="paineis">'+escapeHtml(r.rec_paineis_laterais ? 'Sim' : '')+'</td>'+
+                '<td data-k="rampa">'+escapeHtml(r.rec_rampa_rebaixo ? 'Sim' : '')+'</td>'+
+                '<td data-k="tatil">'+escapeHtml(r.rec_pavimento_tatil ? 'Sim' : '')+'</td>'+
+                '<td data-k="banco">'+escapeHtml(r.rec_banco_assento ? 'Sim' : '')+'</td>'+
+                '<td data-k="limpeza">'+escapeHtml(r.rec_limpeza_manutencao ? 'Sim' : '')+'</td>'+
+                '<td data-k="barreira">'+escapeHtml(r.rec_barreira_protecao ? 'Sim' : '')+'</td>'+
                 '<td>'+escapeHtml(r.recommendation_pt||'')+'</td>'+
                 '</tr>'
               ).join('')+
-              '</tbody></table>';
+              '</tbody></table>'+
+              '<scr'+'ipt>'+
+              '(function(){'+
+                'function baseDir(){'+
+                  'try{'+
+                    'const href=(window.opener && window.opener.location && window.opener.location.href) ? window.opener.location.href : window.location.href;'+
+                    'return href.split("#")[0].split("?")[0].replace(/\/[^\/]*$/, "/");'+
+                  '}catch(e){ return ""; }'+
+                '}'+
+                'function imgUrl(folder,file){'+
+                  'const b=baseDir();'+
+                  'if(!b) return "";'+
+                  'return b+"stop_images/"+encodeURIComponent(folder)+"/"+encodeURIComponent(file);'+
+                '}'+
+                'const hover=document.createElement("div");'+
+                'hover.id="stopHover";'+
+                'hover.style.cssText="display:none;position:fixed;left:0;top:0;z-index:9999;padding:8px;background:rgba(15,17,24,.96);border:1px solid rgba(255,255,255,.14);border-radius:12px;box-shadow:0 16px 48px rgba(0,0,0,.45);";'+
+                'hover.innerHTML = "<img id=\\\"stopHoverImg\\\" src=\\\"\\\" alt=\\\"Foto da paragem\\\" style=\\\"display:block;width:260px;height:180px;object-fit:cover;border-radius:10px;\\\"/>";'+
+                'document.body.appendChild(hover);'+
+                'const hoverImg = document.getElementById("stopHoverImg");'+
+                'let hoverActive = false;'+
+                'function hideHover(){ hover.style.display="none"; if(hoverImg) hoverImg.src=""; hoverActive=false; }'+
+                'function showHover(url, x, y){'+
+                  'if(!url) return;'+
+                  'hoverActive=true;'+
+                  'if(hoverImg) hoverImg.src=url;'+
+                  'const margin=14;'+
+                  'const w=280; const h=200;'+
+                  'let left = x + margin; let top = y + margin;'+
+                  'if(left + w > window.innerWidth) left = x - w - margin;'+
+                  'if(top + h > window.innerHeight) top = y - h - margin;'+
+                  'left = Math.max(8, Math.min(left, window.innerWidth - w - 8));'+
+                  'top = Math.max(8, Math.min(top, window.innerHeight - h - 8));'+
+                  'hover.style.left = left + "px";'+
+                  'hover.style.top = top + "px";'+
+                  'hover.style.display = "block";'+
+                '}'+
+                'document.addEventListener("mousemove", (e)=>{'+
+                  'if(!hoverActive) return;'+
+                  'const x=e.clientX, y=e.clientY;'+
+                  'const margin=14; const w=280; const h=200;'+
+                  'let left = x + margin; let top = y + margin;'+
+                  'if(left + w > window.innerWidth) left = x - w - margin;'+
+                  'if(top + h > window.innerHeight) top = y - h - margin;'+
+                  'left = Math.max(8, Math.min(left, window.innerWidth - w - 8));'+
+                  'top = Math.max(8, Math.min(top, window.innerHeight - h - 8));'+
+                  'hover.style.left = left + "px";'+
+                  'hover.style.top = top + "px";'+
+                '});'+
+                'document.addEventListener("mouseover", (e)=>{'+
+                  'const td = e.target && e.target.closest ? e.target.closest("td.stop-name") : null;'+
+                  'if(!td) return;'+
+                  'const folder=(td.getAttribute("data-folder")||"").trim();'+
+                  'const file=(td.getAttribute("data-file")||"").trim();'+
+                  'if(!folder || !file) return;'+
+                  'const url=imgUrl(folder,file);'+
+                  'showHover(url, e.clientX, e.clientY);'+
+                '});'+
+                'document.addEventListener("mouseout", (e)=>{'+
+                  'const td = e.target && e.target.closest ? e.target.closest("td.stop-name") : null;'+
+                  'if(!td) return;'+
+                  'hideHover();'+
+                '});'+
+                'for(const img of Array.from(document.querySelectorAll("img.stop-thumb"))){'+
+                  'const folder=img.getAttribute("data-folder")||"";'+
+                  'const file=img.getAttribute("data-file")||"";'+
+                  'const url=imgUrl(folder,file);'+
+                  'if(url) img.src = url;'+
+                '}'+
+                'const tb=document.querySelector("table tbody");'+
+                'if(!tb) return;'+
+                'const sel=Array.from(document.querySelectorAll("select[data-filter]"));'+
+                'function rowHasSim(tr, key){'+
+                  'const td=tr.querySelector(`td[data-k="${key}"]`);'+
+                  'if(!td) return false;'+
+                  'return (td.textContent||"").trim().toLowerCase()==="sim";'+
+                '}'+
+                'function apply(){'+
+                  'const rules={};'+
+                  'for(const s of sel){ rules[s.getAttribute("data-filter")]=s.value; }'+
+                  'const rows=Array.from(tb.querySelectorAll("tr"));'+
+                  'for(const tr of rows){'+
+                    'let hide=false;'+
+                    'for(const k in rules){'+
+                      'if(rules[k]==="sim" && !rowHasSim(tr,k)) { hide=true; break; }'+
+                    '}'+
+                    'tr.style.display = hide ? "none" : "";'+
+                  '}'+
+                '}'+
+                'for(const s of sel) s.addEventListener("change", apply);'+
+                'apply();'+
+              '})();'+
+              '</scr'+'ipt>';
             openHtmlReport('Transportes', body);
           });
         }
